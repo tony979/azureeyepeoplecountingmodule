@@ -1,0 +1,28 @@
+# --------------------------------------------------------------
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+# --------------------------------------------------------------
+
+# sudo docker build -t azureeyepeoplecountingmodule -f Dockerfile.arm64v8 .
+
+FROM mcr.microsoft.com/azureedgedevices/azureeyemodule:2104-2
+
+# Build inference app
+COPY app /app
+
+RUN mkdir /app/build && \
+    cd /app/build && \
+    cmake -DOpenCV_DIR=/eyesom/build/install/lib64/cmake/opencv4 \
+          -DmxIf_DIR=/eyesom/mxif/install/share/mxIf \
+          -DCMAKE_PREFIX_PATH=/onnxruntime/install/lib64 \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          .. && \
+    make -j $(nproc) && \
+    mv /app/build/inference /app/inference && \
+    rm -rf /app/build && \
+    rm -rf /app/*.c* && \
+    rm -rf /app/*.h* && \
+    rm -rf /app/*.txt && \
+    wget https://aedsamples.blob.core.windows.net/vision/aeddevkitnew/person-detection-retail-0013.zip -O /app/person-detection-retail-0013.zip
+
+CMD ["/bin/bash", "-c", "./app/inference -m=/app/person-detection-retail-0013.zip"]
