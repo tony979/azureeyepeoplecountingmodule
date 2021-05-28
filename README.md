@@ -6,8 +6,7 @@ azureeyepeoplecountingmodule is an IoT Edge module for people counting with Azur
 To start, run the command below to build the module.
 
 ```
-sudo docker build -t azureeyepeoplecountingmodule -f Dockerfile.
-arm64v8 .
+sudo docker build -t azureeyepeoplecountingmodule -f Dockerfile.arm64v8 .
 ```
 
 Then, run the command below to start the module.
